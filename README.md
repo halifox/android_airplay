@@ -51,3 +51,35 @@ airplay.airplayUninit();
 
 The host application must provide an `AirplayJni.CallBacks` implementation to
 consume decoded PCM audio and metadata events.
+
+## Demo app
+
+The optional app module contains a small Java and XML receiver demo. It
+shows the current song title, artist, album, JPEG album art, audio format,
+playback position, and duration. The demo uses the public airplay module
+without changing its native protocol implementation.
+
+Build and install the demo with:
+
+    ./gradlew :app:assembleDebug
+
+After launching the app on an Android device:
+
+1. Connect the phone and the AirPlay sender to the same Wi-Fi network.
+2. Tap Start receiving.
+3. Select the phone's AirPlay receiver named Airplay Demo on the sender.
+4. Stop receiving before closing the app when testing lifecycle changes.
+
+The data path is:
+
+    AirPlay sender -> native RAOP/RTP receiver -> JNI callbacks -> AudioTrack and UI
+
+The Java demo is intentionally a display-only player for transport progress.
+The progress bar is not seekable because the current native API does not
+expose a seek command. Metadata is read from the DMAP tags minm, asar, and
+asal. The current library still has these known limitations:
+
+- audio-only RAOP reception;
+- no AirPlay video, photo, or screen-mirroring reception;
+- one native AirPlay client at a time;
+- the existing mDNS helper only recognizes wlan0 and eth0 interfaces.
